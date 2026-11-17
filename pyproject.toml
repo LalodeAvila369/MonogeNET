@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "monogenet"
+version = "0.0.1"
+description = "Learnable monogenic signal layers for PyTorch: log-Gabor filters, phase symmetry, phase asymmetry and phase congruency as trainable CNN building blocks for medical imaging."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy", "torch"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+data = ["medmnist"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
