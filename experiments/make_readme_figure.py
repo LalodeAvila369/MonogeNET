@@ -3,7 +3,7 @@
 Radial log-Gabor bank with the thesis defaults (wavelengths 36, 39, 42 px,
 k/w0 = 0.55). Row 1: frequency response; row 2: spatial kernel (real part,
 i.e. the "even" filter) and the Riesz odd1 component for the first scale.
-This is illustrative only; the library implementation arrives in ROADMAP step 4.
+Uses monogenet.filters.radial_log_gabor.
 """
 
 from pathlib import Path
@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import torch
 
 from monogenet.filters.grids import frequency_radius
+from monogenet.filters.log_gabor import radial_log_gabor
 
 N = 256
 WAVELENGTHS = (36, 39, 42)
@@ -27,10 +28,9 @@ u = torch.fft.fftfreq(N)[None, :].expand(N, N)
 fig, axes = plt.subplots(2, 4, figsize=(12, 6.2))
 for i, wl in enumerate(WAVELENGTHS):
     f0 = 1.0 / wl
-    g = torch.exp(-(torch.log(radius / f0) ** 2) / (2 * torch.log(torch.tensor(K_OVER_W0)) ** 2))
-    g[radius_nodc == 0] = 0.0  # zero DC gain
+    g = radial_log_gabor(N, N, wl, K_OVER_W0)
     axes[0, i].imshow(torch.fft.fftshift(g), cmap="magma", extent=(-0.5, 0.5, 0.5, -0.5))
-    axes[0, i].set_title(f"Frequency response, $\lambda_0$={wl}px")
+    axes[0, i].set_title(rf"Frequency response, $\lambda_0$={wl}px")
     axes[0, i].set_xlim(-0.15, 0.15)
     axes[0, i].set_ylim(0.15, -0.15)
     kernel = torch.fft.fftshift(torch.fft.ifft2(g).real)

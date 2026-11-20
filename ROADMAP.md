@@ -8,7 +8,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 3. Frequency-grid utilities (`fftfreq` meshgrid, radius, angle) with tests
 
 ## Phase 1: Filters (`monogenet.filters`)
-- [ ] 4. Radial log-Gabor filter (fixed parameters), DC = 0, peak at f0
+- [x] 4. Radial log-Gabor filter (fixed parameters), DC = 0, peak at f0
 - [ ] 5. Multi-scale log-Gabor bank (min wavelength, scale factor, sigma/f0)
 - [ ] 6. Angular spread function for oriented banks
 - [ ] 7. Riesz transform kernels (H1, H2) and tests on synthetic edges
