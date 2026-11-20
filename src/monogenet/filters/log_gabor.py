@@ -8,7 +8,7 @@ import torch
 
 from monogenet.filters.grids import frequency_radius
 
-__all__ = ["radial_log_gabor"]
+__all__ = ["radial_log_gabor", "log_gabor_wavelengths", "log_gabor_bank"]
 
 
 def radial_log_gabor(
@@ -57,3 +57,52 @@ def radial_log_gabor(
     dc_mask = torch.zeros(height, width, dtype=torch.bool, device=radius.device)
     dc_mask[0, 0] = True
     return torch.where(dc_mask, torch.zeros_like(g), g)
+
+
+def log_gabor_wavelengths(
+    n_scales: int,
+    min_wavelength: float | torch.Tensor,
+    scale_factor: float | torch.Tensor = 2.0,
+    *,
+    device: torch.device | str | None = None,
+    dtype: torch.dtype = torch.float32,
+) -> torch.Tensor:
+    r"""Geometric sequence of centre wavelengths :math:`\lambda_s = \lambda_{\min}\, m^{s}`.
+
+    ``m`` is ``scale_factor`` (> 1 for increasing wavelength), ``s = 0..n_scales-1``.
+    Returns a tensor of shape ``(n_scales,)``.
+    """
+    if n_scales < 1:
+        raise ValueError("n_scales must be >= 1")
+    lam = torch.as_tensor(min_wavelength, device=device, dtype=dtype)
+    m = torch.as_tensor(scale_factor, device=device, dtype=dtype)
+    exponents = torch.arange(n_scales, device=lam.device, dtype=dtype)
+    return lam * m**exponents
+
+
+def log_gabor_bank(
+    height: int,
+    width: int,
+    n_scales: int = 3,
+    min_wavelength: float | torch.Tensor = 36.0,
+    scale_factor: float | torch.Tensor = 1.0833,
+    sigma_onf: float | torch.Tensor = 0.55,
+    *,
+    device: torch.device | str | None = None,
+    dtype: torch.dtype = torch.float32,
+) -> torch.Tensor:
+    r"""Multi-scale radial log-Gabor bank, shape ``(n_scales, height, width)``.
+
+    Scale :math:`s` is :func:`radial_log_gabor` with
+    :math:`\lambda_s = \lambda_{\min}\, m^{s}` and a shared
+    :math:`\sigma_{o/f} = k/\omega_0`. The defaults (36 px, ``m`` = 1.0833,
+    3 scales) give wavelengths of about 36, 39 and 42 px, the thesis values for
+    hip ultrasound. Differentiable in ``min_wavelength``, ``scale_factor`` and
+    ``sigma_onf`` when they are tensors.
+    """
+    wavelengths = log_gabor_wavelengths(
+        n_scales, min_wavelength, scale_factor, device=device, dtype=dtype
+    )
+    return torch.stack(
+        [radial_log_gabor(height, width, wl, sigma_onf, device=device, dtype=dtype) for wl in wavelengths]
+    )
