@@ -8,6 +8,18 @@
 
 *Radial log-Gabor bank with the thesis defaults (wavelengths 36, 39, 42 px, k/w0 = 0.55): frequency responses, spatial kernels and a Riesz component. Regenerate with `python experiments/make_readme_figure.py`.*
 
+## What it computes
+
+Synthetic image (blob, thin line, step edges, noise) processed with a log-Gabor bank and the Riesz transform: even and odd responses, local amplitude and phase, and the three phase features. Symmetric structures (blob centre, line) light up in PS, edges in PA, and PC marks anything where scales agree.
+
+![Monogenic features](docs/images/monogenic_features.png)
+
+Phase features are far more stable than raw filter responses when contrast changes (noise level is held fixed, so the lowest contrasts degrade):
+
+![Contrast sweep](docs/images/contrast_invariance.gif)
+
+*Illustrative figures computed inline by `experiments/make_readme_features.py`; the library implementations follow in ROADMAP steps 11-17.*
+
 ## Motivation
 
 Local phase features (phase symmetry, phase asymmetry, phase congruency) computed from the monogenic signal are contrast-invariant and work well on noisy modalities such as ultrasound, but their filter parameters are usually hand-tuned. MonogeNet makes them **learnable**, and explores using them **inside** a network (not only as a pre-processing step) as parameter-efficient replacements for convolutions.
