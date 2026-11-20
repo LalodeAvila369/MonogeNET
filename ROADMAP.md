@@ -5,7 +5,7 @@ One step per weekday, one commit per step. Tick each box when done.
 ## Phase 0: Setup
 - [x] 1. Project structure, README, roadmap, packaging config
 - [x] 2. Test setup (pytest), CI workflow (GitHub Actions, CPU)
-- [ ] 3. Frequency-grid utilities (`fftfreq` meshgrid, radius, angle) with tests
+- [x] 3. Frequency-grid utilities (`fftfreq` meshgrid, radius, angle) with tests
 
 ## Phase 1: Filters (`monogenet.filters`)
 - [ ] 4. Radial log-Gabor filter (fixed parameters), DC = 0, peak at f0
