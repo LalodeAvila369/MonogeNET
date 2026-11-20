@@ -4,6 +4,10 @@
 
 > Status: early development. See [ROADMAP.md](ROADMAP.md).
 
+![Log-Gabor filter bank](docs/images/log_gabor_bank.png)
+
+*Radial log-Gabor bank with the thesis defaults (wavelengths 36, 39, 42 px, k/w0 = 0.55): frequency responses, spatial kernels and a Riesz component. Regenerate with `python experiments/make_readme_figure.py`.*
+
 ## Motivation
 
 Local phase features (phase symmetry, phase asymmetry, phase congruency) computed from the monogenic signal are contrast-invariant and work well on noisy modalities such as ultrasound, but their filter parameters are usually hand-tuned. MonogeNet makes them **learnable**, and explores using them **inside** a network (not only as a pre-processing step) as parameter-efficient replacements for convolutions.
