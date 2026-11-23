@@ -12,7 +12,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 5. Multi-scale log-Gabor bank (min wavelength, scale factor, sigma/f0)
 - [x] 6. Angular spread function for oriented banks
 - [x] 7. Riesz transform kernels (H1, H2) and tests on synthetic edges
-- [ ] 8. Low-pass / window handling to reduce FFT edge artifacts
+- [x] 8. Low-pass / window handling to reduce FFT edge artifacts
 - [ ] 9. Learnable parameterisation (bounded f0 via sigmoid, sigma in log-space)
 - [ ] 10. Gradient checks (`torch.autograd.gradcheck`) for the filter bank
 
