@@ -10,7 +10,7 @@ One step per weekday, one commit per step. Tick each box when done.
 ## Phase 1: Filters (`monogenet.filters`)
 - [x] 4. Radial log-Gabor filter (fixed parameters), DC = 0, peak at f0
 - [x] 5. Multi-scale log-Gabor bank (min wavelength, scale factor, sigma/f0)
-- [ ] 6. Angular spread function for oriented banks
+- [x] 6. Angular spread function for oriented banks
 - [ ] 7. Riesz transform kernels (H1, H2) and tests on synthetic edges
 - [ ] 8. Low-pass / window handling to reduce FFT edge artifacts
 - [ ] 9. Learnable parameterisation (bounded f0 via sigmoid, sigma in log-space)
