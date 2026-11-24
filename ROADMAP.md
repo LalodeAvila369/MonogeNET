@@ -17,7 +17,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 10. Gradient checks (`torch.autograd.gradcheck`) for the filter bank
 
 ## Phase 2: Features (`monogenet.features`)
-- [ ] 11. Monogenic signal: even, odd1, odd2 per scale
+- [x] 11. Monogenic signal: even, odd1, odd2 per scale
 - [ ] 12. Local amplitude, local phase, local orientation
 - [ ] 13. NumPy reference implementation of the thesis pipeline (for validation)
 - [ ] 14. Phase symmetry (fixed threshold) matching the reference
