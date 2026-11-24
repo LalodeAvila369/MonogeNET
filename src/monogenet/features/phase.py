@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-__all__ = ["noise_threshold", "phase_symmetry"]
+__all__ = ["noise_threshold", "phase_symmetry", "phase_asymmetry"]
 
 
 def _split(mono: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -67,3 +67,26 @@ def phase_symmetry(
     odd = torch.sqrt(o1 * o1 + o2 * o2)
     amp = torch.sqrt(e * e + o1 * o1 + o2 * o2)
     return torch.clamp(e.abs() - odd - threshold, min=0.0) / (amp + eps)
+
+
+def phase_asymmetry(
+    mono: torch.Tensor,
+    threshold: torch.Tensor | float | None = None,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    r"""Phase asymmetry per scale, shape ``(..., S, H, W)``.
+
+    .. math::
+        \mathrm{PA}_s = \frac{\lfloor\, \sqrt{o_{1,s}^2 + o_{2,s}^2} - |e_s| - T_s \,\rfloor}
+                             {\sqrt{e_s^2 + o_{1,s}^2 + o_{2,s}^2} + \varepsilon}.
+
+    The mirror image of :func:`phase_symmetry`: high where the odd response
+    dominates, i.e. step edges and other antisymmetric structures. For
+    :math:`T_s \ge 0`, PS and PA cannot both be non-zero at the same pixel.
+    """
+    e, o1, o2 = _split(mono)
+    if threshold is None:
+        threshold = noise_threshold(mono)
+    odd = torch.sqrt(o1 * o1 + o2 * o2)
+    amp = torch.sqrt(e * e + o1 * o1 + o2 * o2)
+    return torch.clamp(odd - e.abs() - threshold, min=0.0) / (amp + eps)
