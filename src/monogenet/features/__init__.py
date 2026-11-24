@@ -1,5 +1,6 @@
 """MonogeNet: features module."""
 
+from monogenet.features.congruency import phase_congruency
 from monogenet.features.local import (
     LocalFeatures,
     local_amplitude,
@@ -19,5 +20,6 @@ __all__ = [
     "monogenic_signal",
     "noise_threshold",
     "phase_asymmetry",
+    "phase_congruency",
     "phase_symmetry",
 ]
