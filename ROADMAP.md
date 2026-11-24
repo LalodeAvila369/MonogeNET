@@ -14,7 +14,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 7. Riesz transform kernels (H1, H2) and tests on synthetic edges
 - [x] 8. Low-pass / window handling to reduce FFT edge artifacts
 - [x] 9. Learnable parameterisation (bounded f0 via sigmoid, sigma in log-space)
-- [ ] 10. Gradient checks (`torch.autograd.gradcheck`) for the filter bank
+- [x] 10. Gradient checks (`torch.autograd.gradcheck`) for the filter bank
 
 ## Phase 2: Features (`monogenet.features`)
 - [ ] 11. Monogenic signal: even, odd1, odd2 per scale
