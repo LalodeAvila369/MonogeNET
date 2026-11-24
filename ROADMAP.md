@@ -20,7 +20,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 11. Monogenic signal: even, odd1, odd2 per scale
 - [x] 12. Local amplitude, local phase, local orientation
 - [x] 13. NumPy reference implementation of the thesis pipeline (for validation)
-- [ ] 14. Phase symmetry (fixed threshold) matching the reference
+- [x] 14. Phase symmetry (fixed threshold) matching the reference
 - [ ] 15. Phase asymmetry
 - [ ] 16. Phase congruency (monogenic version)
 - [ ] 17. Feature type: atan2(even, |odd|)
