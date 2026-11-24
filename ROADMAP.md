@@ -19,7 +19,7 @@ One step per weekday, one commit per step. Tick each box when done.
 ## Phase 2: Features (`monogenet.features`)
 - [x] 11. Monogenic signal: even, odd1, odd2 per scale
 - [x] 12. Local amplitude, local phase, local orientation
-- [ ] 13. NumPy reference implementation of the thesis pipeline (for validation)
+- [x] 13. NumPy reference implementation of the thesis pipeline (for validation)
 - [ ] 14. Phase symmetry (fixed threshold) matching the reference
 - [ ] 15. Phase asymmetry
 - [ ] 16. Phase congruency (monogenic version)
