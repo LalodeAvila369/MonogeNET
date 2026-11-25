@@ -10,9 +10,11 @@ from monogenet.features.local import (
     local_phase,
 )
 from monogenet.features.monogenic import monogenic_signal
-from monogenet.features.phase import noise_threshold, phase_asymmetry, phase_symmetry
+from monogenet.features.phase import phase_asymmetry, phase_symmetry
+from monogenet.features.threshold import LearnableThreshold, noise_threshold, soft_floor
 
 __all__ = [
+    "LearnableThreshold",
     "LocalFeatures",
     "feature_type",
     "local_amplitude",
@@ -24,4 +26,5 @@ __all__ = [
     "phase_asymmetry",
     "phase_congruency",
     "phase_symmetry",
+    "soft_floor",
 ]

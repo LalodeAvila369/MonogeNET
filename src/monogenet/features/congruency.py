@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from monogenet.features.phase import noise_threshold
+from monogenet.features.threshold import noise_threshold, soft_floor
 
 __all__ = ["phase_congruency"]
 
@@ -14,6 +14,7 @@ def phase_congruency(
     threshold: torch.Tensor | float | None = None,
     eps: float = 1e-6,
     smooth: float = 1e-12,
+    sharpness: float | None = None,
 ) -> torch.Tensor:
     r"""Monogenic phase congruency, shape ``(..., H, W)`` (scales are combined).
 
@@ -44,6 +45,8 @@ def phase_congruency(
         smooth: added under the square root of the cross-product norm so the
             gradient stays finite when a scale is exactly parallel to the mean
             direction (a bias of order ``sqrt(smooth)``).
+        sharpness: softplus sharpness replacing the hard floor (``None`` = hard);
+            see :func:`monogenet.features.soft_floor`.
     """
     if mono.ndim < 4 or mono.shape[-3] != 3:
         raise ValueError(f"expected monogenic tensor (..., S, 3, H, W), got {tuple(mono.shape)}")
@@ -57,4 +60,4 @@ def phase_congruency(
     cross_norm = torch.sqrt((cross * cross).sum(dim=-3) + smooth)
     amp = torch.sqrt((mono * mono).sum(dim=-3))
     energy = (dot - cross_norm).sum(dim=-3)
-    return torch.clamp(energy - threshold, min=0.0) / (amp.sum(dim=-3) + eps)
+    return soft_floor((energy - threshold) / (amp.sum(dim=-3) + eps), sharpness)
