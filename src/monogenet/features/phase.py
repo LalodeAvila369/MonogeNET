@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import torch
 
+from monogenet.features._ops import promote_half, safe_sqrt
 from monogenet.features.threshold import noise_threshold, soft_floor
 
 __all__ = ["phase_symmetry", "phase_asymmetry"]
@@ -15,6 +16,7 @@ def _split(mono: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor
     return mono.unbind(dim=-3)
 
 
+@promote_half
 def phase_symmetry(
     mono: torch.Tensor,
     threshold: torch.Tensor | float | None = None,
@@ -40,11 +42,12 @@ def phase_symmetry(
     e, o1, o2 = _split(mono)
     if threshold is None:
         threshold = noise_threshold(mono)
-    odd = torch.sqrt(o1 * o1 + o2 * o2)
-    amp = torch.sqrt(e * e + o1 * o1 + o2 * o2)
+    odd = safe_sqrt(o1 * o1 + o2 * o2)
+    amp = safe_sqrt(e * e + o1 * o1 + o2 * o2)
     return soft_floor((e.abs() - odd - threshold) / (amp + eps), sharpness)
 
 
+@promote_half
 def phase_asymmetry(
     mono: torch.Tensor,
     threshold: torch.Tensor | float | None = None,
@@ -64,6 +67,6 @@ def phase_asymmetry(
     e, o1, o2 = _split(mono)
     if threshold is None:
         threshold = noise_threshold(mono)
-    odd = torch.sqrt(o1 * o1 + o2 * o2)
-    amp = torch.sqrt(e * e + o1 * o1 + o2 * o2)
+    odd = safe_sqrt(o1 * o1 + o2 * o2)
+    amp = safe_sqrt(e * e + o1 * o1 + o2 * o2)
     return soft_floor((odd - e.abs() - threshold) / (amp + eps), sharpness)

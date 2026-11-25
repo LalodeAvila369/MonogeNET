@@ -6,6 +6,8 @@ from typing import NamedTuple
 
 import torch
 
+from monogenet.features._ops import promote_half, safe_atan2, safe_sqrt
+
 __all__ = [
     "LocalFeatures",
     "local_amplitude",
@@ -30,17 +32,19 @@ def _split(mono: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor
     return mono.unbind(dim=-3)
 
 
+@promote_half
 def local_amplitude(mono: torch.Tensor, eps: float = 0.0) -> torch.Tensor:
     r"""Local amplitude :math:`A = \sqrt{e^2 + o_1^2 + o_2^2 + \varepsilon}`.
 
     ``mono`` has shape ``(..., S, 3, H, W)`` with channels ``[even, odd1, odd2]``.
-    With ``eps = 0`` the gradient is undefined where the signal is exactly zero;
-    use a small positive ``eps`` when training.
+    The square root is internally guarded (1e-24), so the gradient is finite (zero)
+    where the signal is exactly zero; ``eps`` adds an optional extra bias.
     """
     e, o1, o2 = _split(mono)
-    return torch.sqrt(e * e + o1 * o1 + o2 * o2 + eps)
+    return safe_sqrt(e * e + o1 * o1 + o2 * o2 + eps)
 
 
+@promote_half
 def local_phase(mono: torch.Tensor) -> torch.Tensor:
     r"""Local phase :math:`\varphi = \mathrm{atan2}\big(\sqrt{o_1^2 + o_2^2},\, e\big) \in [0, \pi]`.
 
@@ -49,9 +53,10 @@ def local_phase(mono: torch.Tensor) -> torch.Tensor:
     ideal step edge (feature type, see ROADMAP step 17).
     """
     e, o1, o2 = _split(mono)
-    return torch.atan2(torch.sqrt(o1 * o1 + o2 * o2), e)
+    return safe_atan2(safe_sqrt(o1 * o1 + o2 * o2), e)
 
 
+@promote_half
 def local_orientation(mono: torch.Tensor) -> torch.Tensor:
     r"""Local orientation :math:`\theta \in (-\pi/2, \pi/2]` of the dominant gradient direction.
 
@@ -66,9 +71,10 @@ def local_orientation(mono: torch.Tensor) -> torch.Tensor:
     """
     _, o1, o2 = _split(mono)
     s = torch.where(o1 < 0, -torch.ones_like(o1), torch.ones_like(o1))
-    return torch.atan2(s * o2, s * o1)
+    return safe_atan2(s * o2, s * o1)
 
 
+@promote_half
 def local_features(mono: torch.Tensor, eps: float = 0.0) -> LocalFeatures:
     """Amplitude, phase and orientation of a monogenic tensor ``(..., S, 3, H, W)``."""
     return LocalFeatures(
@@ -78,6 +84,7 @@ def local_features(mono: torch.Tensor, eps: float = 0.0) -> LocalFeatures:
     )
 
 
+@promote_half
 def feature_type(mono: torch.Tensor) -> torch.Tensor:
     r"""Feature type :math:`\psi = \mathrm{atan2}\big(e,\; \sqrt{o_1^2 + o_2^2}\big) \in [-\pi/2, \pi/2]`.
 
@@ -92,4 +99,4 @@ def feature_type(mono: torch.Tensor) -> torch.Tensor:
     Shape ``(..., S, H, W)`` for ``mono`` of shape ``(..., S, 3, H, W)``.
     """
     e, o1, o2 = _split(mono)
-    return torch.atan2(e, torch.sqrt(o1 * o1 + o2 * o2))
+    return safe_atan2(e, safe_sqrt(o1 * o1 + o2 * o2))

@@ -25,7 +25,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 16. Phase congruency (monogenic version)
 - [x] 17. Feature type: atan2(even, |odd|)
 - [x] 18. Soft thresholds (softplus) and learnable noise threshold T
-- [ ] 19. Numerical stability (epsilon, safe atan2 gradients) with tests
+- [x] 19. Numerical stability (epsilon, safe atan2 gradients) with tests
 - [ ] 20. Synthetic test suite: lines, step edges, blobs under contrast changes
 
 ## Phase 3: Layers (`monogenet.layers`)

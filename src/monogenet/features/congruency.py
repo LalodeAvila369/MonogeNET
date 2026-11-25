@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import torch
 
+from monogenet.features._ops import promote_half, safe_sqrt
 from monogenet.features.threshold import noise_threshold, soft_floor
 
 __all__ = ["phase_congruency"]
 
 
+@promote_half
 def phase_congruency(
     mono: torch.Tensor,
     threshold: torch.Tensor | float | None = None,
@@ -58,6 +60,6 @@ def phase_congruency(
     dot = (mono * m).sum(dim=-3)  # (..., S, H, W)
     cross = torch.linalg.cross(mono, m.expand_as(mono), dim=-3)
     cross_norm = torch.sqrt((cross * cross).sum(dim=-3) + smooth)
-    amp = torch.sqrt((mono * mono).sum(dim=-3))
+    amp = safe_sqrt((mono * mono).sum(dim=-3))
     energy = (dot - cross_norm).sum(dim=-3)
     return soft_floor((energy - threshold) / (amp.sum(dim=-3) + eps), sharpness)

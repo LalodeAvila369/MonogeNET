@@ -6,15 +6,18 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from monogenet.features._ops import promote_half, safe_sqrt
+
 __all__ = ["noise_threshold", "soft_floor", "LearnableThreshold"]
 
 
 def _amplitude(mono: torch.Tensor) -> torch.Tensor:
     if mono.ndim < 4 or mono.shape[-3] != 3:
         raise ValueError(f"expected monogenic tensor (..., S, 3, H, W), got {tuple(mono.shape)}")
-    return torch.sqrt((mono * mono).sum(dim=-3))
+    return safe_sqrt((mono * mono).sum(dim=-3))
 
 
+@promote_half
 def noise_threshold(
     mono: torch.Tensor,
     stat: str = "mean",
