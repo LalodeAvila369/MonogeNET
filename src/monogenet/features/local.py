@@ -12,6 +12,7 @@ __all__ = [
     "local_phase",
     "local_orientation",
     "local_features",
+    "feature_type",
 ]
 
 
@@ -75,3 +76,20 @@ def local_features(mono: torch.Tensor, eps: float = 0.0) -> LocalFeatures:
         phase=local_phase(mono),
         orientation=local_orientation(mono),
     )
+
+
+def feature_type(mono: torch.Tensor) -> torch.Tensor:
+    r"""Feature type :math:`\psi = \mathrm{atan2}\big(e,\; \sqrt{o_1^2 + o_2^2}\big) \in [-\pi/2, \pi/2]`.
+
+    A signed, polarity-aware summary of the local structure:
+
+    * :math:`\psi = +\pi/2`: bright symmetric feature (line, blob);
+    * :math:`\psi = -\pi/2`: dark symmetric feature;
+    * :math:`\psi = 0`: ideal step edge (odd response only);
+    * in between: mixtures of even and odd structure.
+
+    It is related to the local phase by :math:`\psi = \pi/2 - \varphi`.
+    Shape ``(..., S, H, W)`` for ``mono`` of shape ``(..., S, 3, H, W)``.
+    """
+    e, o1, o2 = _split(mono)
+    return torch.atan2(e, torch.sqrt(o1 * o1 + o2 * o2))

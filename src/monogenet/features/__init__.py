@@ -3,6 +3,7 @@
 from monogenet.features.congruency import phase_congruency
 from monogenet.features.local import (
     LocalFeatures,
+    feature_type,
     local_amplitude,
     local_features,
     local_orientation,
@@ -13,6 +14,7 @@ from monogenet.features.phase import noise_threshold, phase_asymmetry, phase_sym
 
 __all__ = [
     "LocalFeatures",
+    "feature_type",
     "local_amplitude",
     "local_features",
     "local_orientation",
