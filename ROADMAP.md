@@ -40,7 +40,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 27. Training loop, metrics (ACC, AUC), config files, seeding
 - [x] 28. Baseline: small CNN
 - [x] 29. Baseline: ResNet-18
-- [ ] 30. ResNet-18 + MonogenicFrontEnd
+- [x] 30. ResNet-18 + MonogenicFrontEnd
 - [ ] 31. CNN with PhaseBlocks replacing convolutions
 
 ## Phase 5: Experiments
