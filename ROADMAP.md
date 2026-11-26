@@ -31,7 +31,7 @@ One step per weekday, one commit per step. Tick each box when done.
 ## Phase 3: Layers (`monogenet.layers`)
 - [x] 21. `MonogenicFrontEnd`: image -> [energy, phase, PS, PA] per scale
 - [x] 22. Multi-channel support (per-channel filters)
-- [ ] 23. `PhaseBlock`: depthwise learnable log-Gabor + Riesz -> PS/PA -> 1x1 conv
+- [x] 23. `PhaseBlock`: depthwise learnable log-Gabor + Riesz -> PS/PA -> 1x1 conv
 - [ ] 24. Parameter and FLOP counting utilities vs. Conv2d
 - [ ] 25. Filter visualisation (spatial and frequency domain)
 
