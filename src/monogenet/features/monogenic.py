@@ -31,7 +31,9 @@ def monogenic_signal(image: torch.Tensor, bank: torch.Tensor) -> torch.Tensor:
         image: real tensor ``(..., H, W)``, e.g. ``(B, C, H, W)`` or ``(H, W)``.
         bank: real transfer functions ``(S, H, W)`` in FFT order, as returned by
             :func:`monogenet.filters.log_gabor_bank` or
-            :class:`monogenet.filters.LearnableLogGaborBank`.
+            :class:`monogenet.filters.LearnableLogGaborBank`. A per-channel bank
+            ``(C, S, H, W)`` is applied channel by channel to an image ``(B, C, H, W)``
+            (leading dimensions broadcast against the image's).
 
     Returns:
         Real tensor ``(..., S, 3, H, W)`` with channel order
@@ -39,9 +41,9 @@ def monogenic_signal(image: torch.Tensor, bank: torch.Tensor) -> torch.Tensor:
     """
     if image.is_complex():
         raise TypeError("image must be real")
-    if bank.ndim != 3 or bank.shape[-2:] != image.shape[-2:]:
+    if bank.ndim < 3 or bank.shape[-2:] != image.shape[-2:]:
         raise ValueError(
-            f"bank must have shape (S, H, W) matching the image, got {tuple(bank.shape)} "
+            f"bank must have shape (..., S, H, W) matching the image, got {tuple(bank.shape)} "
             f"for image {tuple(image.shape)}"
         )
     h, w = image.shape[-2:]

@@ -38,9 +38,12 @@ class LearnableLogGaborBank(nn.Module):
         min_wavelength, max_wavelength: bounds on the learnable wavelength
             (``min_wavelength >= 2`` is the Nyquist limit).
         learn_f0, learn_sigma: set to ``False`` to freeze that parameter.
+        channels: if given, every one of ``channels`` input channels gets its own
+            ``(S,)`` set of parameters (all initialised identically), and ``forward``
+            returns ``(channels, S, H, W)``; otherwise one shared set and ``(S, H, W)``.
 
     Call ``forward(height, width)`` to get the bank of shape
-    ``(n_scales, height, width)`` in FFT order.
+    ``(n_scales, height, width)`` (or ``(channels, n_scales, height, width)``) in FFT order.
     """
 
     def __init__(
@@ -52,6 +55,7 @@ class LearnableLogGaborBank(nn.Module):
         *,
         learn_f0: bool = True,
         learn_sigma: bool = True,
+        channels: int | None = None,
     ) -> None:
         super().__init__()
         if not 0 < min_wavelength < max_wavelength:
@@ -65,15 +69,21 @@ class LearnableLogGaborBank(nn.Module):
         if ((sg <= 0) | (sg >= 1)).any():
             raise ValueError("sigma_onf must be in (0, 1)")
 
+        if channels is not None:
+            if channels < 1:
+                raise ValueError("channels must be >= 1")
+            wl = wl.expand(channels, -1)
+            sg = sg.expand(channels, -1)
         self.register_buffer("f_min", torch.tensor(1.0 / max_wavelength))
         self.register_buffer("f_max", torch.tensor(1.0 / min_wavelength))
         frac = (1.0 / wl - self.f_min) / (self.f_max - self.f_min)
-        self.raw_f0 = nn.Parameter(torch.logit(frac), requires_grad=learn_f0)
-        self.log_bandwidth = nn.Parameter(torch.log(-torch.log(sg)), requires_grad=learn_sigma)
+        self.channels = channels
+        self.raw_f0 = nn.Parameter(torch.logit(frac).clone(), requires_grad=learn_f0)
+        self.log_bandwidth = nn.Parameter(torch.log(-torch.log(sg)).clone(), requires_grad=learn_sigma)
 
     @property
     def n_scales(self) -> int:
-        return self.raw_f0.numel()
+        return self.raw_f0.shape[-1]
 
     @property
     def f0(self) -> torch.Tensor:
@@ -91,13 +101,10 @@ class LearnableLogGaborBank(nn.Module):
         return torch.exp(-torch.exp(self.log_bandwidth))
 
     def forward(self, height: int, width: int) -> torch.Tensor:
-        wl, sg = self.wavelengths, self.sigma_onf
-        return torch.stack(
-            [
-                radial_log_gabor(height, width, wl[s], sg[s], device=wl.device, dtype=wl.dtype)
-                for s in range(self.n_scales)
-            ]
+        wl, sg = self.wavelengths, self.sigma_onf  # (S,) or (C, S)
+        return radial_log_gabor(
+            height, width, wl[..., None, None], sg[..., None, None], device=wl.device, dtype=wl.dtype
         )
 
     def extra_repr(self) -> str:
-        return f"n_scales={self.n_scales}, f0 in ({self.f_min.item():.4g}, {self.f_max.item():.4g})"
+        return f"n_scales={self.n_scales}, channels={self.channels}, f0 in ({self.f_min.item():.4g}, {self.f_max.item():.4g})"

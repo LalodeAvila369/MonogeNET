@@ -42,6 +42,9 @@ def radial_log_gabor(
         wavelength: centre wavelength in pixels (must be > 0).
         sigma_onf: :math:`k/\omega_0`, in (0, 1) (log of it must be non-zero).
 
+    ``wavelength`` and ``sigma_onf`` may also be tensors of shape ``(..., 1, 1)``; the
+    result then has shape ``(..., height, width)`` (used to build whole banks at once).
+
     Returns:
         Real tensor of shape ``(height, width)`` in FFT order (DC at ``[0, 0]``).
     """

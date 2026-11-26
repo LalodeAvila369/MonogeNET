@@ -172,6 +172,6 @@ def test_blank_image_is_finite_with_finite_gradients() -> None:
 def test_invalid_inputs() -> None:
     layer = MonogenicFrontEnd()
     with pytest.raises(ValueError):
-        layer(torch.rand(2, 3, 32, 32))  # multi-channel arrives in the next step
+        layer(torch.rand(2, 3, 32, 32))  # layer was built for a single channel
     with pytest.raises(ValueError):
         layer(torch.rand(32, 32))

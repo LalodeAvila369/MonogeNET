@@ -73,7 +73,8 @@ class LearnableThreshold(nn.Module):
     contrast and the phase features stay contrast invariant. Only the gain is
     learned, :math:`k_s = \mathrm{softplus}(\kappa_s) > 0`, initialised at
     ``init_gain`` (1 reproduces the thesis). That is ``n_scales`` parameters, or
-    one if ``shared=True``.
+    one if ``shared=True``. With ``channels=C`` every channel gets its own gains
+    (``C * n_scales`` parameters) and ``mono`` must be ``(..., C, S, 3, H, W)``.
 
     A Rayleigh noise model, :math:`T = \mu + c\,\sigma` with
     :math:`\mu = \bar A` and :math:`\sigma = \bar A\sqrt{(4-\pi)/\pi}`, is also a
@@ -91,6 +92,7 @@ class LearnableThreshold(nn.Module):
         stat: str = "mean",
         *,
         shared: bool = False,
+        channels: int | None = None,
     ) -> None:
         super().__init__()
         if n_scales < 1:
@@ -99,23 +101,36 @@ class LearnableThreshold(nn.Module):
             raise ValueError("init_gain must be positive")
         if stat not in ("mean", "geometric"):
             raise ValueError(f"unknown stat {stat!r}; use 'mean' or 'geometric'")
+        if channels is not None and channels < 1:
+            raise ValueError("channels must be >= 1")
         self.n_scales = n_scales
         self.stat = stat
         self.shared = shared
+        self.channels = channels
         # Inverse softplus: softplus(raw) = init_gain.
         raw = torch.log(torch.expm1(torch.tensor(float(init_gain))))
-        size = (1, 1, 1) if shared else (n_scales, 1, 1)
+        if shared:
+            size = (1, 1, 1)
+        elif channels is None:
+            size = (n_scales, 1, 1)
+        else:
+            size = (channels, n_scales, 1, 1)
         self.raw_gain = nn.Parameter(raw.expand(size).clone())
 
     @property
     def gain(self) -> torch.Tensor:
-        """Positive gain :math:`k_s`, shape ``(S, 1, 1)`` or ``(1, 1, 1)``."""
+        """Positive gain :math:`k_s`: ``(S, 1, 1)``, ``(C, S, 1, 1)`` or ``(1, 1, 1)``."""
         return F.softplus(self.raw_gain)
 
     def forward(self, mono: torch.Tensor) -> torch.Tensor:
         if not self.shared and mono.shape[-4] != self.n_scales:
             raise ValueError(f"expected {self.n_scales} scales, got {mono.shape[-4]}")
+        if self.channels is not None and not self.shared and mono.shape[-5] != self.channels:
+            raise ValueError(f"expected {self.channels} channels, got {mono.shape[-5]}")
         return noise_threshold(mono, self.stat, self.gain.to(mono.dtype))
 
     def extra_repr(self) -> str:
-        return f"n_scales={self.n_scales}, stat={self.stat!r}, shared={self.shared}"
+        return (
+            f"n_scales={self.n_scales}, channels={self.channels}, "
+            f"stat={self.stat!r}, shared={self.shared}"
+        )
