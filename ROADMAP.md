@@ -36,7 +36,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 25. Filter visualisation (spatial and frequency domain)
 
 ## Phase 4: Data and baselines (`monogenet.data`, `experiments/`)
-- [ ] 26. MedMNIST+ loaders (BreastMNIST, OCTMNIST; 128 and 224)
+- [x] 26. MedMNIST+ loaders (BreastMNIST, OCTMNIST; 128 and 224)
 - [ ] 27. Training loop, metrics (ACC, AUC), config files, seeding
 - [ ] 28. Baseline: small CNN
 - [ ] 29. Baseline: ResNet-18
