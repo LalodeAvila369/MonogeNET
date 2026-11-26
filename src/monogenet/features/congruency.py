@@ -15,7 +15,7 @@ def phase_congruency(
     mono: torch.Tensor,
     threshold: torch.Tensor | float | None = None,
     eps: float = 1e-6,
-    smooth: float = 1e-12,
+    smooth: float = 1e-24,
     sharpness: float | None = None,
 ) -> torch.Tensor:
     r"""Monogenic phase congruency, shape ``(..., H, W)`` (scales are combined).
@@ -55,7 +55,7 @@ def phase_congruency(
     if threshold is None:
         threshold = noise_threshold(mono).sum(dim=-3)  # (..., 1, 1)
     total = mono.sum(dim=-4, keepdim=True)  # (..., 1, 3, H, W)
-    norm = torch.sqrt((total * total).sum(dim=-3, keepdim=True) + smooth * smooth)
+    norm = safe_sqrt((total * total).sum(dim=-3, keepdim=True))
     m = total / (norm + eps)  # unit direction of the summed response
     dot = (mono * m).sum(dim=-3)  # (..., S, H, W)
     cross = torch.linalg.cross(mono, m.expand_as(mono), dim=-3)
