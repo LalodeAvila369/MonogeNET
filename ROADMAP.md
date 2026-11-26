@@ -41,7 +41,7 @@ One step per weekday, one commit per step. Tick each box when done.
 - [x] 28. Baseline: small CNN
 - [x] 29. Baseline: ResNet-18
 - [x] 30. ResNet-18 + MonogenicFrontEnd
-- [ ] 31. CNN with PhaseBlocks replacing convolutions
+- [x] 31. CNN with PhaseBlocks replacing convolutions
 
 ## Phase 5: Experiments
 - [ ] 32. BreastMNIST training-set-size curves (10%, 25%, 50%, 100%)
