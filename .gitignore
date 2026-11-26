@@ -11,7 +11,7 @@ venv/
 .ipynb_checkpoints/
 
 # Data and experiment outputs (never commit datasets or checkpoints)
-data/
+/data/
 *.npz
 runs/
 checkpoints/
