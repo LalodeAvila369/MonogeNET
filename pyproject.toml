@@ -13,6 +13,7 @@ dependencies = ["numpy", "torch"]
 [project.optional-dependencies]
 dev = ["pytest"]
 data = ["medmnist"]
+viz = ["matplotlib"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

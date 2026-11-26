@@ -16,6 +16,6 @@ jobs:
       - name: Install CPU-only PyTorch
         run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Install package
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev,viz]"
       - name: Run tests
         run: pytest
